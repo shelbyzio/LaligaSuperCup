@@ -88,18 +88,18 @@
 
     <script>
         const TEAMS_LIST = [
-            { id: "BAR", name: "Barcelona", logo: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg" },
-            { id: "RMA", name: "Real Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg" },
-            { id: "ATM", name: "Atletico Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f9/Atletico_Madrid_Logo_2024.svg/250px-Atletico_Madrid_Logo_2024.svg.png" },
-            { id: "VIL", name: "Villarreal", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Villarreal_CF_logo-en.svg/1280px-Villarreal_CF_logo-en.svg.png" },
-            { id: "RSO", name: "Real Sociedad", logo: "https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg" },
-            { id: "BET", name: "Real Betis", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/1/13/Real_betis_logo.svg/1280px-Real_betis_logo.svg.png" },
-            { id: "SEV", name: "Sevilla", logo: "https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg" },
-            { id: "ATH", name: "Athletic Bilbao", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/98/Club_Athletic_Bilbao_logo.svg/1280px-Club_Athletic_Bilbao_logo.svg.png" },
-            { id: "GET", name: "Getafe", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/46/Getafe_logo.svg/1280px-Getafe_logo.svg.png" },
-            { id: "GIR", name: "Girona", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f7/Girona_FC_Logo.svg/1280px-Girona_FC_Logo.svg.png" },
-            { id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg" },
-            { id: "ALA", name: "Alaves", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Deportivo_Alaves_logo_%282020%29.svg/1280px-Deportivo_Alaves_logo_%282020%29.svg.png" }
+            { id: "BAR", name: "Barcelona", logo: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg", tg: "https://t.me/Sirkokaung" },
+            { id: "RMA", name: "Real Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg", tg: "https://t.me/AalDDin12" },
+            { id: "ATM", name: "Atletico Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f9/Atletico_Madrid_Logo_2024.svg/250px-Atletico_Madrid_Logo_2024.svg.png", tg: "https://t.me/kmyatnyein" },
+            { id: "VIL", name: "Villarreal", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/b/b9/Villarreal_CF_logo-en.svg/1280px-Villarreal_CF_logo-en.svg.png", tg: "https://t.me/HeinLe3" },
+            { id: "RSO", name: "Real Sociedad", logo: "https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg", tg: "https://t.me/Aung_Htet_Paing23" },
+            { id: "BET", name: "Real Betis", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/1/13/Real_betis_logo.svg/1280px-Real_betis_logo.svg.png", tg: "https://t.me/Almoehtwe" },
+            { id: "SEV", name: "Sevilla", logo: "https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg", tg: "https://t.me/UKyawMaung13" },
+            { id: "ATH", name: "Athletic Bilbao", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/98/Club_Athletic_Bilbao_logo.svg/1280px-Club_Athletic_Bilbao_logo.svg.png", tg: "https://t.me/Alcohol0987" },
+            { id: "GET", name: "Getafe", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/46/Getafe_logo.svg/1280px-Getafe_logo.svg.png", tg: "https://t.me/GannaBoy" },
+            { id: "GIR", name: "Girona", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f7/Girona_FC_Logo.svg/1280px-Girona_FC_Logo.svg.png", tg: "https://t.me/Dean2172" },
+            { id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg", tg: "https://t.me/" },
+            { id: "ALA", name: "Alaves", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Deportivo_Alaves_logo_%282020%29.svg/1280px-Deportivo_Alaves_logo_%282020%29.svg.png", tg: "https://t.me/Warhit45" }
         ];
 
         let fixtures = [], currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
@@ -125,12 +125,25 @@
 
         function renderMatchdaySelector() {
             const container = document.getElementById('matchday-selector-container');
+            container.innerHTML = '';
             for (let r = 0; r < TOTAL_ROUNDS; r++) {
                 const btn = document.createElement('button');
+                btn.id = `matchday-btn-${r}`;
                 btn.className = `flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border ${r === 0 ? 'bg-[#db002d] text-white' : 'bg-slate-100 text-slate-600'}`;
                 btn.innerText = `R${r + 1}`;
-                btn.onclick = () => { currentViewingMatchday = r; renderFixtures(); };
+                btn.onclick = () => { currentViewingMatchday = r; renderFixtures(); updateMatchdaySelector(); };
                 container.appendChild(btn);
+            }
+        }
+
+        function updateMatchdaySelector() {
+            for (let r = 0; r < TOTAL_ROUNDS; r++) {
+                const btn = document.getElementById(`matchday-btn-${r}`);
+                if (r === currentViewingMatchday) {
+                    btn.className = "flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border bg-[#db002d] text-white";
+                } else {
+                    btn.className = "flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border bg-slate-100 text-slate-600";
+                }
             }
         }
 
@@ -143,15 +156,15 @@
                 const card = document.createElement('div');
                 card.className = "bg-white border border-slate-100 rounded-xl p-3 grid grid-cols-[1fr,auto,1fr] items-center gap-2 shadow-sm";
                 card.innerHTML = `
-                    <div class="flex items-center gap-2">
+                    <a href="${h.tg}" target="_blank" class="flex items-center gap-2 cursor-pointer hover:opacity-70">
                         <img src="${h.logo}" class="w-8 h-8 object-contain">
                         <span class="text-xs font-bold truncate">${h.name}</span>
-                    </div>
+                    </a>
                     <span class="text-[#db002d] font-black text-sm px-3">VS</span>
-                    <div class="flex items-center justify-end gap-2 text-right">
+                    <a href="${a.tg}" target="_blank" class="flex items-center justify-end gap-2 text-right cursor-pointer hover:opacity-70">
                         <span class="text-xs font-bold truncate">${a.name}</span>
                         <img src="${a.logo}" class="w-8 h-8 object-contain">
-                    </div>
+                    </a>
                 `;
                 container.appendChild(card);
             });
@@ -159,13 +172,14 @@
 
         function updateStandingsTable() {
             const tbody = document.getElementById('standings-table-body');
-            // Sample data structure for standings
             tbody.innerHTML = TEAMS_LIST.map((team, idx) => `
                 <tr>
                     <td class="py-3 px-2">${idx+1}</td>
                     <td class="text-left py-3 flex items-center gap-2">
-                        <img src="${team.logo}" class="w-5 h-5 object-contain">
-                        <span class="truncate">${team.name}</span>
+                        <a href="${team.tg}" target="_blank" class="flex items-center gap-2 cursor-pointer hover:underline">
+                            <img src="${team.logo}" class="w-5 h-5 object-contain">
+                            <span class="truncate">${team.name}</span>
+                        </a>
                     </td>
                     <td class="py-3 px-2">0</td>
                     <td class="py-3 px-2">0</td>
@@ -181,7 +195,11 @@
         
         function changeMatchday(d) {
             let n = currentViewingMatchday + d;
-            if (n >= 0 && n < TOTAL_ROUNDS) { currentViewingMatchday = n; renderFixtures(); }
+            if (n >= 0 && n < TOTAL_ROUNDS) { 
+                currentViewingMatchday = n; 
+                renderFixtures(); 
+                updateMatchdaySelector();
+            }
         }
     </script>
 </body>
