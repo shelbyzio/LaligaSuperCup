@@ -98,12 +98,19 @@
             { id: "ATH", name: "Athletic Bilbao", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/9/98/Club_Athletic_Bilbao_logo.svg/1280px-Club_Athletic_Bilbao_logo.svg.png", tg: "https://t.me/Alcohol0987" },
             { id: "GET", name: "Getafe", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/4/46/Getafe_logo.svg/1280px-Getafe_logo.svg.png", tg: "https://t.me/GannaBoy" },
             { id: "GIR", name: "Girona", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f7/Girona_FC_Logo.svg/1280px-Girona_FC_Logo.svg.png", tg: "https://t.me/Dean2172" },
-            { id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg", tg: "https://t.me/Nayzin797" },
+            { id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valenciacf.svg", tg: "https://t.me/" },
             { id: "ALA", name: "Alaves", logo: "https://upload.wikimedia.org/wikipedia/en/thumb/f/f8/Deportivo_Alaves_logo_%282020%29.svg/1280px-Deportivo_Alaves_logo_%282020%29.svg.png", tg: "https://t.me/Warhit45" }
         ];
 
-        let fixtures = [], currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
-        window.onload = function() { generateFixedRoundRobinFixtures(); renderMatchdaySelector(); renderFixtures(); };
+        let fixtures = [], stats = {}, currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
+        
+        window.onload = function() { 
+            generateFixedRoundRobinFixtures(); 
+            injectResults();
+            calculateStats();
+            renderMatchdaySelector(); 
+            renderFixtures(); 
+        };
 
         function switchTab(tab) {
             document.getElementById('tab-fixtures-content').classList.toggle('hidden', tab !== 'fixtures');
@@ -123,6 +130,24 @@
             }
         }
 
+        function injectResults() {
+            const round1Results = ["6-2", "4-1", "3-4", "7-0", "1-6", "1-7"];
+            fixtures[0].forEach((match, index) => { match.score = round1Results[index]; });
+        }
+
+        function calculateStats() {
+            TEAMS_LIST.forEach(t => stats[t.id] = { m:0, w:0, d:0, l:0, gf:0, ga:0, pts:0 });
+            fixtures[0].forEach(m => {
+                if(!m.score) return;
+                const [gs, ga] = m.score.split('-').map(Number);
+                const h = stats[m.home], a = stats[m.away];
+                h.m++; a.m++; h.gf += gs; h.ga += ga; a.gf += ga; a.ga += gs;
+                if(gs > ga) { h.w++; h.pts += 3; a.l++; }
+                else if(gs < ga) { a.w++; a.pts += 3; h.l++; }
+                else { h.d++; a.d++; h.pts++; a.pts++; }
+            });
+        }
+
         function renderMatchdaySelector() {
             const container = document.getElementById('matchday-selector-container');
             container.innerHTML = '';
@@ -139,11 +164,7 @@
         function updateMatchdaySelector() {
             for (let r = 0; r < TOTAL_ROUNDS; r++) {
                 const btn = document.getElementById(`matchday-btn-${r}`);
-                if (r === currentViewingMatchday) {
-                    btn.className = "flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border bg-[#db002d] text-white";
-                } else {
-                    btn.className = "flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border bg-slate-100 text-slate-600";
-                }
+                btn.className = `flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border ${r === currentViewingMatchday ? 'bg-[#db002d] text-white' : 'bg-slate-100 text-slate-600'}`;
             }
         }
 
@@ -156,15 +177,9 @@
                 const card = document.createElement('div');
                 card.className = "bg-white border border-slate-100 rounded-xl p-3 grid grid-cols-[1fr,auto,1fr] items-center gap-2 shadow-sm";
                 card.innerHTML = `
-                    <a href="${h.tg}" target="_blank" class="flex items-center gap-2 cursor-pointer hover:opacity-70">
-                        <img src="${h.logo}" class="w-8 h-8 object-contain">
-                        <span class="text-xs font-bold truncate">${h.name}</span>
-                    </a>
-                    <span class="text-[#db002d] font-black text-sm px-3">VS</span>
-                    <a href="${a.tg}" target="_blank" class="flex items-center justify-end gap-2 text-right cursor-pointer hover:opacity-70">
-                        <span class="text-xs font-bold truncate">${a.name}</span>
-                        <img src="${a.logo}" class="w-8 h-8 object-contain">
-                    </a>
+                    <a href="${h.tg}" target="_blank" class="flex items-center gap-2"><img src="${h.logo}" class="w-8 h-8 object-contain"><span class="text-xs font-bold truncate">${h.name}</span></a>
+                    <div class="flex flex-col items-center px-3">${match.score ? `<span class="text-[14px] font-black text-slate-800">${match.score}</span>` : `<span class="text-[#db002d] font-black text-sm">VS</span>`}</div>
+                    <a href="${a.tg}" target="_blank" class="flex items-center justify-end gap-2 text-right"><span class="text-xs font-bold truncate">${a.name}</span><img src="${a.logo}" class="w-8 h-8 object-contain"></a>
                 `;
                 container.appendChild(card);
             });
@@ -172,34 +187,21 @@
 
         function updateStandingsTable() {
             const tbody = document.getElementById('standings-table-body');
-            tbody.innerHTML = TEAMS_LIST.map((team, idx) => `
+            const sorted = TEAMS_LIST.map(t => ({...t, ...stats[t.id]})).sort((a,b) => b.pts - a.pts || (b.gf-b.ga) - (a.gf-a.ga));
+            tbody.innerHTML = sorted.map((t, idx) => `
                 <tr>
-                    <td class="py-3 px-2">${idx+1}</td>
-                    <td class="text-left py-3 flex items-center gap-2">
-                        <a href="${team.tg}" target="_blank" class="flex items-center gap-2 cursor-pointer hover:underline">
-                            <img src="${team.logo}" class="w-5 h-5 object-contain">
-                            <span class="truncate">${team.name}</span>
-                        </a>
-                    </td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2">0</td>
-                    <td class="py-3 px-2 font-bold text-[#db002d]">0</td>
+                    <td class="py-3 px-2 font-bold">${idx+1}</td>
+                    <td class="text-left py-3 flex items-center gap-2"><img src="${t.logo}" class="w-5 h-5"><span class="truncate">${t.name}</span></td>
+                    <td class="py-3 px-2">${t.m}</td><td class="py-3 px-2">${t.w}</td><td class="py-3 px-2">${t.d}</td><td class="py-3 px-2">${t.l}</td>
+                    <td class="py-3 px-2">${t.gf}</td><td class="py-3 px-2">${t.ga}</td><td class="py-3 px-2">${t.gf - t.ga}</td>
+                    <td class="py-3 px-2 font-bold text-[#db002d]">${t.pts}</td>
                 </tr>
             `).join('');
         }
         
         function changeMatchday(d) {
             let n = currentViewingMatchday + d;
-            if (n >= 0 && n < TOTAL_ROUNDS) { 
-                currentViewingMatchday = n; 
-                renderFixtures(); 
-                updateMatchdaySelector();
-            }
+            if (n >= 0 && n < TOTAL_ROUNDS) { currentViewingMatchday = n; renderFixtures(); updateMatchdaySelector(); }
         }
     </script>
 </body>
