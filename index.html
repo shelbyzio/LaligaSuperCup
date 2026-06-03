@@ -106,6 +106,7 @@
         
         window.onload = function() { 
             generateFixedRoundRobinFixtures(); 
+            setCustomFixtures(); // Custom override for R2
             injectResults();
             calculateStats();
             renderMatchdaySelector(); 
@@ -130,21 +131,60 @@
             }
         }
 
+        // Custom override for Round 2 matches based on user request
+        function setCustomFixtures() {
+            fixtures[1] = [
+                { home: "RMA", away: "ALA" },
+                { home: "ATM", away: "BAR" },
+                { home: "VIL", away: "VAL" },
+                { home: "RSO", away: "GIR" },
+                { home: "BET", away: "GET" },
+                { home: "SEV", away: "ATH" }
+            ];
+        }
+
         function injectResults() {
-            const round1Results = ["6-2", "4-1", "3-4", "2-1", "1-6", "1-7"];
-            fixtures[0].forEach((match, index) => { match.score = round1Results[index]; });
+            const round1 = [
+                { h: "BAR", a: "ALA", s: "6-2" },
+                { h: "RMA", a: "VAL", s: "4-1" },
+                { h: "ATM", a: "GIR", s: "3-4" },
+                { h: "VIL", a: "GET", s: "2-1" },
+                { h: "RSO", a: "ATH", s: "1-6" },
+                { h: "BET", a: "SEV", s: "1-7" }
+            ];
+            
+            const round2 = [
+                { h: "RMA", a: "ALA", s: "5-1" },
+                { h: "ATM", a: "BAR", s: "8-2" },
+                { h: "VIL", a: "VAL", s: "7-0" },
+                { h: "RSO", a: "GIR", s: "4-8" },
+                { h: "BET", a: "GET", s: "2-8" },
+                { h: "SEV", a: "ATH", s: "2-5" }
+            ];
+
+            applyResults(0, round1);
+            applyResults(1, round2);
+        }
+
+        function applyResults(roundIdx, results) {
+            results.forEach(res => {
+                const match = fixtures[roundIdx].find(m => (m.home === res.h && m.away === res.a) || (m.home === res.a && m.away === res.h));
+                if (match) match.score = res.s;
+            });
         }
 
         function calculateStats() {
             TEAMS_LIST.forEach(t => stats[t.id] = { m:0, w:0, d:0, l:0, gf:0, ga:0, pts:0 });
-            fixtures[0].forEach(m => {
-                if(!m.score) return;
-                const [gs, ga] = m.score.split('-').map(Number);
-                const h = stats[m.home], a = stats[m.away];
-                h.m++; a.m++; h.gf += gs; h.ga += ga; a.gf += ga; a.ga += gs;
-                if(gs > ga) { h.w++; h.pts += 3; a.l++; }
-                else if(gs < ga) { a.w++; a.pts += 3; h.l++; }
-                else { h.d++; a.d++; h.pts++; a.pts++; }
+            fixtures.forEach(round => {
+                round.forEach(m => {
+                    if(!m.score) return;
+                    const [gs, ga] = m.score.split('-').map(Number);
+                    const h = stats[m.home], a = stats[m.away];
+                    h.m++; a.m++; h.gf += gs; h.ga += ga; a.gf += ga; a.ga += gs;
+                    if(gs > ga) { h.w++; h.pts += 3; a.l++; }
+                    else if(gs < ga) { a.w++; a.pts += 3; h.l++; }
+                    else { h.d++; a.d++; h.pts++; a.pts++; }
+                });
             });
         }
 
