@@ -111,7 +111,7 @@
             renderMatchdaySelector(); 
             renderFixtures(); 
         };
- 
+
         function switchTab(tab) {
             document.getElementById('tab-fixtures-content').classList.toggle('hidden', tab !== 'fixtures');
             document.getElementById('tab-standings-content').classList.toggle('hidden', tab !== 'standings');
@@ -131,22 +131,22 @@
         }
 
         function injectResults() {
-            // Round 1-6
             applyResults(0, [{ h: "BAR", a: "ALA", s: "6-2" }, { h: "RMA", a: "VAL", s: "4-1" }, { h: "ATM", a: "GIR", s: "3-4" }, { h: "VIL", a: "GET", s: "2-1" }, { h: "RSO", a: "ATH", s: "1-6" }, { h: "BET", a: "SEV", s: "1-7" }]);
             applyResults(1, [{ h: "RMA", a: "ALA", s: "5-1" }, { h: "ATM", a: "BAR", s: "8-2" }, { h: "VIL", a: "VAL", s: "7-0" }, { h: "RSO", a: "GIR", s: "4-8" }, { h: "BET", a: "GET", s: "2-8" }, { h: "SEV", a: "ATH", s: "2-5" }]);
             applyResults(2, [{ h: "ATM", a: "ALA", s: "1-0" }, { h: "VIL", a: "RMA", s: "4-4" }, { h: "RSO", a: "BAR", s: "5-3" }, { h: "BET", a: "VAL", s: "CANCELLED" }, { h: "SEV", a: "GIR", s: "3-4" }, { h: "ATH", a: "GET", s: "9-1" }]);
             applyResults(3, [{ h: "VIL", a: "ALA", s: "6-2" }, { h: "RSO", a: "ATM", s: "0-3" }, { h: "BET", a: "RMA", s: "CANCELLED" }, { h: "SEV", a: "BAR", s: "4-2" }, { h: "ATH", a: "VAL", s: "4-2" }, { h: "GET", a: "GIR", s: "1-5" }]);
             applyResults(4, [{ h: "RSO", a: "ALA", s: "4-0" }, { h: "BET", a: "VIL", s: "0-4" }, { h: "SEV", a: "ATM", s: "2-5" }, { h: "ATH", a: "RMA", s: "2-7" }, { h: "GET", a: "BAR", s: "6-1" }, { h: "GIR", a: "VAL", s: "8-0" }]);
             applyResults(5, [{ h: "BET", a: "ALA", s: "0-1" }, { h: "SEV", a: "RSO", s: "5-4" }, { h: "ATH", a: "VIL", s: "1-1" }, { h: "GET", a: "ATM", s: "0-2" }, { h: "GIR", a: "RMA", s: "2-1" }, { h: "VAL", a: "BAR", s: "0-3" }]);
+            applyResults(6, [{ h: "SEV", a: "ALA", s: "2-1" }, { h: "ATH", a: "BET", s: "3-0" }, { h: "GET", a: "RSO", s: "1-5" }, { h: "GIR", a: "VIL", s: "4-0" }, { h: "VAL", a: "ATM", s: "0-3" }, { h: "BAR", a: "RMA", s: "4-3" }]);
             
-            // Round 7 Results
-            applyResults(6, [
-                { h: "SEV", a: "ALA", s: "2-1" },
-                { h: "ATH", a: "BET", s: "3-0" },
-                { h: "GET", a: "RSO", s: "1-5" },
-                { h: "GIR", a: "VIL", s: "4-0" },
-                { h: "VAL", a: "ATM", s: "0-3" },
-                { h: "BAR", a: "RMA", s: "4-3" }
+            // Round 8 Results
+            applyResults(7, [
+                { h: "ATH", a: "ALA", s: "3-0" },
+                { h: "GET", a: "SEV", s: "6-5" },
+                { h: "GIR", a: "BET", s: "9-1" },
+                { h: "VAL", a: "RSO", s: "0-4" },
+                { h: "BAR", a: "VIL", s: "0-3" },
+                { h: "RMA", a: "ATM", s: "3-2" }
             ]);
         }
 
