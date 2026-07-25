@@ -99,10 +99,11 @@
             5: [ { home: "BET", away: "ALA", hs: 0, as: 3 }, { home: "SEV", away: "RSO", hs: 0, as: 3 }, { home: "ATH", away: "VIL", hs: 0, as: 3 }, { home: "GET", away: "ATM", hs: 0, as: 4 }, { home: "GIR", away: "RMA", hs: 0, as: 3 }, { home: "VAL", away: "BAR", hs: 5, as: 7 } ],
             6: [ { home: "SEV", away: "ALA", hs: 2, as: 3 }, { home: "ATH", away: "BET", hs: 0, as: 3 }, { home: "GET", away: "RSO", hs: 2, as: 5 }, { home: "GIR", away: "VIL", hs: 0, as: 3 }, { home: "VAL", away: "ATM", hs: 1, as: 3 }, { home: "BAR", away: "RMA", hs: 3, as: 5 } ],
             7: [ { home: "ATH", away: "ALA", hs: 0, as: 3 }, { home: "GET", away: "SEV", hs: 2, as: 3 }, { home: "GIR", away: "BET", hs: 2, as: 3 }, { home: "VAL", away: "RSO", hs: 1, as: 7 }, { home: "BAR", away: "VIL", hs: 3, as: 9 }, { home: "RMA", away: "ATM", hs: 0, as: 1 } ],
-            8: [], 9: [], 10: []
+            8: [ { home: "GET", away: "ALA", hs: 2, as: 3 }, { home: "GIR", away: "ATH", hs: 3, as: 0 }, { home: "VAL", away: "SEV", hs: 5, as: 4 }, { home: "BAR", away: "BET", hs: null, as: null }, { home: "RMA", away: "RSO", hs: 1, as: 4 }, { home: "ATM", away: "VIL", hs: 0, as: 4 } ],
+            9: [], 10: []
         };
 
-        let fixtures = [], stats = {}, currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
+        let fixtures = [], stats = {}, currentViewingMatchday = 8, TOTAL_ROUNDS = 11;
         
         window.onload = () => { generateFixtures(); processResults(); renderMatchdaySelector(); renderFixtures(); };
 
@@ -122,7 +123,7 @@
             stats = {};
             TEAMS_LIST.forEach(t => stats[t.id] = { m:0, w:0, d:0, l:0, gf:0, ga:0, gd:0, pts:0 });
             Object.values(RESULTS).flat().forEach(res => {
-                if (res.hs === undefined || res.as === undefined) return;
+                if (res.hs === undefined || res.hs === null || res.as === null) return;
                 const h = stats[res.home], a = stats[res.away];
                 h.m++; a.m++; h.gf += res.hs; h.ga += res.as; a.gf += res.as; a.ga += res.hs;
                 if (res.hs > res.as) { h.w++; a.l++; h.pts += 3; }
@@ -137,7 +138,7 @@
             for (let r = 0; r < TOTAL_ROUNDS; r++) {
                 const btn = document.createElement('button');
                 btn.id = `matchday-btn-${r}`;
-                btn.className = `flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border ${r === 0 ? 'bg-[#db002d] text-white' : 'bg-slate-100'}`;
+                btn.className = `flex-shrink-0 px-3 py-1 rounded-lg font-bold text-[10px] border ${r === currentViewingMatchday ? 'bg-[#db002d] text-white' : 'bg-slate-100'}`;
                 btn.innerText = `R${r + 1}`;
                 btn.onclick = () => { currentViewingMatchday = r; renderFixtures(); updateSelectors(); };
                 container.appendChild(btn);
