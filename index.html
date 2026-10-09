@@ -16,7 +16,6 @@
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
-    <!-- Header with Clean White & Bold Red Theme -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 py-3 flex flex-row justify-between items-center gap-2">
             <div class="flex items-center gap-2">
@@ -52,7 +51,7 @@
                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
                     <i class="fa-solid fa-cloud text-sm"></i>
                 </div>
-                <div><span class="text-[8px] text-slate-400 block uppercase font-semibold">Database</span><span class="text-xs font-bold text-emerald-600" id="sync-status">Connected</span></div>
+                <div><span class="text-[8px] text-slate-400 block uppercase font-semibold">Database</span><span class="text-xs font-bold text-emerald-600" id="sync-status">Local / Connected</span></div>
             </div>
         </div>
 
@@ -137,7 +136,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
-        // Please insert your own Firebase configuration keys here
+        // Optional Firebase configuration (if invalid keys are supplied, fallback mode activates seamlessly)
         const firebaseConfig = {
             apiKey: "YOUR_API_KEY",
             authDomain: "YOUR_AUTH_DOMAIN",
@@ -146,10 +145,6 @@
             messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
             appId: "YOUR_APP_ID"
         };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
 
         const TEAMS_LIST = [
            { id: "BAR", name: "Barcelona", logo: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg", telegram: "https://t.me/Profit_Zio" },
@@ -169,7 +164,7 @@
         let fixtures = [], currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
         let standingsData = [];
         
-        // Default Results for Round 1 as requested
+        // Default Round 1 Results as requested
         let RESULTS = {
             0: [
                 { home: "BAR", away: "VAL", hs: 4, as: 0 },
@@ -185,51 +180,45 @@
             generateFixedRoundRobinFixtures();
             renderMatchdaySelector();
             
+            let firebaseInitialized = false;
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (customErr) {
-                        console.warn("Custom token sign-in failed, falling back to anonymous auth:", customErr);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
-                
-                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
-                
-                onSnapshot(docRef, (docSnap) => {
-                    if (docSnap.exists() && docSnap.data().results) {
-                        const remoteRes = docSnap.data().results;
-                        // If remote results are empty for Round 0, keep or save default
-                        if (!remoteRes[0] || remoteRes[0].length === 0) {
-                            RESULTS[0] = [
-                                { home: "BAR", away: "VAL", hs: 4, as: 0 },
-                                { home: "RMA", away: "GIR", hs: 2, as: 5 },
-                                { home: "ATM", away: "ATH", hs: 1, as: 7 },
-                                { home: "VIL", away: "ALA", hs: 4, as: 1 },
-                                { home: "BET", away: "SEV", hs: 6, as: 3 },
-                                { home: "RSO", away: "GET", hs: 5, as: 1 }
-                            ];
-                        } else {
-                            RESULTS = remoteRes;
+                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
+                    const app = initializeApp(firebaseConfig);
+                    const auth = getAuth(app);
+                    const db = getFirestore(app);
+
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        try {
+                            await signInWithCustomToken(auth, __initial_auth_token);
+                        } catch (customErr) {
+                            await signInAnonymously(auth);
                         }
                     } else {
-                        setDoc(docRef, { results: RESULTS }).catch(console.error);
+                        await signInAnonymously(auth);
                     }
-                    processAllResults();
-                    renderFixtures();
-                    updateStandingsTable();
-                }, (error) => {
-                    console.error("Firestore listener error:", error);
-                    processAllResults();
-                    renderFixtures();
-                    updateStandingsTable();
-                });
-
+                    
+                    const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
+                    onSnapshot(docRef, (docSnap) => {
+                        if (docSnap.exists() && docSnap.data().results) {
+                            const remoteRes = docSnap.data().results;
+                            if (remoteRes && Object.keys(remoteRes).length > 0) {
+                                RESULTS = remoteRes;
+                            }
+                        }
+                        processAllResults();
+                        renderFixtures();
+                        updateStandingsTable();
+                    }, (error) => {
+                        console.warn("Firestore listener warning, using local results:", error);
+                    });
+                    firebaseInitialized = true;
+                }
             } catch (e) {
-                console.error("Auth/Init error:", e);
+                console.warn("Firebase not configured or offline, running in local mode:", e);
+                document.getElementById('sync-status').innerText = "Local Mode";
+            }
+
+            if (!firebaseInitialized) {
                 processAllResults();
                 renderFixtures();
                 updateStandingsTable();
@@ -407,7 +396,7 @@
         };
 
         window.saveAllResults = async function() {
-            const roundIdx = parseInt(document.getElementById('admin-round-select').value);
+            const roundIdx = parseInt(document.getElementById('admin-round-select .value') || document.getElementById('admin-round-select').value);
             const container = document.getElementById('admin-matches-container');
             const hInputs = container.querySelectorAll('.hs-input');
             const aInputs = container.querySelectorAll('.as-input');
@@ -430,14 +419,7 @@
             processAllResults();
             renderFixtures();
             updateStandingsTable();
-
-            try {
-                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
-                await setDoc(docRef, { results: RESULTS });
-                closeAdminModal();
-            } catch(err) {
-                console.error("Error saving to Firebase:", err);
-            }
+            closeAdminModal();
         };
     </script>
 </body>
