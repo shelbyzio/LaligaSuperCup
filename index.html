@@ -201,8 +201,8 @@
                 
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists() && docSnap.data().results) {
-                        // Merge with default round 1 if empty in database
                         const remoteRes = docSnap.data().results;
+                        // If remote results are empty for Round 0, keep or save default
                         if (!remoteRes[0] || remoteRes[0].length === 0) {
                             RESULTS[0] = [
                                 { home: "BAR", away: "VAL", hs: 4, as: 0 },
@@ -216,7 +216,6 @@
                             RESULTS = remoteRes;
                         }
                     } else {
-                        // Initialize database with these results
                         setDoc(docRef, { results: RESULTS }).catch(console.error);
                     }
                     processAllResults();
