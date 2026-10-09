@@ -16,7 +16,6 @@
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
-    <!-- Header with Clean White & Bold Red Theme -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 py-3 flex flex-row justify-between items-center gap-2">
             <div class="flex items-center gap-2">
@@ -138,13 +137,13 @@
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCG8xdfNHBFKo1VlfBYCYZTP-8vid3R97I",
-            authDomain: "superepl.firebaseapp.com",
-            projectId: "superepl",
-            storageBucket: "superepl.firebasestorage.app",
-            messagingSenderId: "885676848744",
-            appId: "1:885676848744:web:ac9f912c3f06ecd3c2eddd",
-            measurementId: "G-FNDM2JKVH9"
+            apiKey: "AIzaSyCG9Jz0sZnQ_QAxTvnRPT_2EdUUb7McG5U",
+            authDomain: "superlaliga-18c57.firebaseapp.com",
+            projectId: "superlaliga-18c57",
+            storageBucket: "superlaliga-18c57.firebasestorage.app",
+            messagingSenderId: "1043694416462",
+            appId: "1:1043694416462:web:9c06ecc2916a3bcbadc91f",
+            measurementId: "G-LP5YE3KECW"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -153,18 +152,17 @@
 
         const TEAMS_LIST = [
            { id: "BAR", name: "Barcelona", logo: "https://upload.wikimedia.org/wikipedia/en/4/47/FC_Barcelona_%28crest%29.svg", telegram: "https://t.me/Profit_Zio" },
-{ id: "RMA", name: "Real Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg", telegram: "https://t.me/Heropool" },
-{ id: "ATM", name: "Atletico Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2024_logo.svg", telegram: "https://t.me/MESSi_10FC" },
-{ id: "VIL", name: "Villarreal", logo: "https://upload.wikimedia.org/wikipedia/en/7/70/Villarreal_CF_logo.svg", telegram: "https://t.me/HainnH20" },
-{ id: "BET", name: "Real Betis", logo: "https://upload.wikimedia.org/wikipedia/en/1/13/Real_Betis_Balompi%C3%A9.svg", telegram: "https://t.me/Junnpe" },
-{ id: "RSO", name: "Real Sociedad", logo: "https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg", telegram: "https://t.me/KeeRan_kawor" },
-{ id: "GET", name: "Getafe", logo: "https://upload.wikimedia.org/wikipedia/en/d/dc/Getafe_CF.svg", telegram: "https://t.me/zores11" },
-{ id: "SEV", name: "Sevilla", logo: "https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg", telegram: "https://t.me/" },
-{ id: "ALA", name: "Alaves", logo: "https://upload.wikimedia.org/wikipedia/en/2/2e/Deportivo_Alav%C3%A9s_logo_%282020%29.svg", telegram: "https://t.me/waiyan1212020" },
-{ id: "ATH", name: "Athletic Bilbao", logo: "https://upload.wikimedia.org/wikipedia/en/9/98/Athletic_Club_Bilbao_logo.svg", telegram: "https://t.me/BWhite099" },
-{ id: "GIR", name: "Girona", logo: "https://upload.wikimedia.org/wikipedia/en/9/90/Girona_FC_Logo.svg", telegram: "https://t.me/APH_Design_Studio_97" },
-{ id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valencia_CF_logo_%282009%29.svg", telegram: "https://t.me/agust_HML" }
-
+           { id: "RMA", name: "Real Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/5/56/Real_Madrid_CF.svg", telegram: "https://t.me/Heropool" },
+           { id: "ATM", name: "Atletico Madrid", logo: "https://upload.wikimedia.org/wikipedia/en/f/f4/Atletico_Madrid_2024_logo.svg", telegram: "https://t.me/MESSi_10FC" },
+           { id: "VIL", name: "Villarreal", logo: "https://upload.wikimedia.org/wikipedia/en/7/70/Villarreal_CF_logo.svg", telegram: "https://t.me/HainnH20" },
+           { id: "BET", name: "Real Betis", logo: "https://upload.wikimedia.org/wikipedia/en/1/13/Real_Betis_Balompi%C3%A9.svg", telegram: "https://t.me/Junnpe" },
+           { id: "RSO", name: "Real Sociedad", logo: "https://upload.wikimedia.org/wikipedia/en/f/f1/Real_Sociedad_logo.svg", telegram: "https://t.me/KeeRan_kawor" },
+           { id: "GET", name: "Getafe", logo: "https://upload.wikimedia.org/wikipedia/en/d/dc/Getafe_CF.svg", telegram: "https://t.me/zores11" },
+           { id: "SEV", name: "Sevilla", logo: "https://upload.wikimedia.org/wikipedia/en/3/3b/Sevilla_FC_logo.svg", telegram: "https://t.me/" },
+           { id: "ALA", name: "Alaves", logo: "https://upload.wikimedia.org/wikipedia/en/2/2e/Deportivo_Alav%C3%A9s_logo_%282020%29.svg", telegram: "https://t.me/waiyan1212020" },
+           { id: "ATH", name: "Athletic Bilbao", logo: "https://upload.wikimedia.org/wikipedia/en/9/98/Athletic_Club_Bilbao_logo.svg", telegram: "https://t.me/BWhite099" },
+           { id: "GIR", name: "Girona", logo: "https://upload.wikimedia.org/wikipedia/en/9/90/Girona_FC_Logo.svg", telegram: "https://t.me/APH_Design_Studio_97" },
+           { id: "VAL", name: "Valencia", logo: "https://upload.wikimedia.org/wikipedia/en/c/ce/Valencia_CF_logo_%282009%29.svg", telegram: "https://t.me/agust_HML" }
         ];
 
         let fixtures = [], currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
@@ -187,7 +185,7 @@
                     await signInAnonymously(auth);
                 }
                 
-                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
+                const docRef = doc(db, 'tournament_results', 'la_liga_12_team');
                 
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists() && docSnap.data().results) {
@@ -226,7 +224,8 @@
                     if(!h || !a) return;
                     const hs = parseInt(res.hs), as = parseInt(res.as);
                     h.mp++; a.mp++; h.gf += hs; h.ga += as; a.gf += as; a.ga += hs;
-                    h.gd = h.gf - h.ga; a.gd = a.gf - a.ga;
+                    h.gd = h.gf - h.ga; 
+                    a.gd = a.gf - a.ga;
                     if (hs > as) { h.w++; h.pts += 3; a.l++; } else if (hs < as) { a.w++; a.pts += 3; h.l++; } else { h.d++; a.d++; h.pts += 1; a.pts += 1; }
                 });
             });
@@ -245,7 +244,8 @@
             for (let round = 0; round < numTeams - 1; round++) {
                 const roundMatches = [];
                 for (let i = 0; i < numTeams / 2; i++) {
-                    const home = (round + i) % (numTeams - 1), away = (i === 0) ? numTeams - 1 : (numTeams - 1 - i + round) % (numTeams - 1);
+                    const home = (round + i) % (numTeams - 1);
+                    const away = (i === 0) ? numTeams - 1 : (numTeams - 1 - i + round) % (numTeams - 1);
                     roundMatches.push({ home: TEAMS_LIST[home].id, away: TEAMS_LIST[away].id });
                 }
                 fixtures.push(roundMatches);
@@ -412,7 +412,7 @@
             updateStandingsTable();
 
             try {
-                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
+                const docRef = doc(db, 'tournament_results', 'la_liga_12_team');
                 await setDoc(docRef, { results: RESULTS });
                 closeAdminModal();
             } catch(err) {
