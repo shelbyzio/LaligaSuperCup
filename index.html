@@ -16,6 +16,7 @@
     </style>
 </head>
 <body class="text-slate-800 min-h-screen flex flex-col">
+    <!-- Header with Clean White & Bold Red Theme -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-3 py-3 flex flex-row justify-between items-center gap-2">
             <div class="flex items-center gap-2">
@@ -136,14 +137,14 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
+        // Please insert your own Firebase configuration keys here
         const firebaseConfig = {
-            apiKey: "AIzaSyCG9Jz0sZnQ_QAxTvnRPT_2EdUUb7McG5U",
-            authDomain: "superlaliga-18c57.firebaseapp.com",
-            projectId: "superlaliga-18c57",
-            storageBucket: "superlaliga-18c57.firebasestorage.app",
-            messagingSenderId: "1043694416462",
-            appId: "1:1043694416462:web:9c06ecc2916a3bcbadc91f",
-            measurementId: "G-LP5YE3KECW"
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -167,7 +168,18 @@
 
         let fixtures = [], currentViewingMatchday = 0, TOTAL_ROUNDS = 11;
         let standingsData = [];
-        let RESULTS = {};
+        
+        // Default Results for Round 1 as requested
+        let RESULTS = {
+            0: [
+                { home: "BAR", away: "VAL", hs: 4, as: 0 },
+                { home: "RMA", away: "GIR", hs: 2, as: 5 },
+                { home: "ATM", away: "ATH", hs: 1, as: 7 },
+                { home: "VIL", away: "ALA", hs: 4, as: 1 },
+                { home: "BET", away: "SEV", hs: 6, as: 3 },
+                { home: "RSO", away: "GET", hs: 5, as: 1 }
+            ]
+        };
 
         window.onload = async function() {
             generateFixedRoundRobinFixtures();
@@ -185,13 +197,26 @@
                     await signInAnonymously(auth);
                 }
                 
-                const docRef = doc(db, 'tournament_results', 'la_liga_12_team');
+                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
                 
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists() && docSnap.data().results) {
-                        RESULTS = docSnap.data().results;
+                        // Merge with default round 1 if empty in database
+                        const remoteRes = docSnap.data().results;
+                        if (!remoteRes[0] || remoteRes[0].length === 0) {
+                            RESULTS[0] = [
+                                { home: "BAR", away: "VAL", hs: 4, as: 0 },
+                                { home: "RMA", away: "GIR", hs: 2, as: 5 },
+                                { home: "ATM", away: "ATH", hs: 1, as: 7 },
+                                { home: "VIL", away: "ALA", hs: 4, as: 1 },
+                                { home: "BET", away: "SEV", hs: 6, as: 3 },
+                                { home: "RSO", away: "GET", hs: 5, as: 1 }
+                            ];
+                        } else {
+                            RESULTS = remoteRes;
+                        }
                     } else {
-                        RESULTS = {};
+                        // Initialize database with these results
                         setDoc(docRef, { results: RESULTS }).catch(console.error);
                     }
                     processAllResults();
@@ -199,7 +224,6 @@
                     updateStandingsTable();
                 }, (error) => {
                     console.error("Firestore listener error:", error);
-                    RESULTS = {};
                     processAllResults();
                     renderFixtures();
                     updateStandingsTable();
@@ -207,7 +231,6 @@
 
             } catch (e) {
                 console.error("Auth/Init error:", e);
-                RESULTS = {};
                 processAllResults();
                 renderFixtures();
                 updateStandingsTable();
@@ -224,8 +247,7 @@
                     if(!h || !a) return;
                     const hs = parseInt(res.hs), as = parseInt(res.as);
                     h.mp++; a.mp++; h.gf += hs; h.ga += as; a.gf += as; a.ga += hs;
-                    h.gd = h.gf - h.ga; 
-                    a.gd = a.gf - a.ga;
+                    h.gd = h.gf - h.ga; a.gd = a.gf - a.ga;
                     if (hs > as) { h.w++; h.pts += 3; a.l++; } else if (hs < as) { a.w++; a.pts += 3; h.l++; } else { h.d++; a.d++; h.pts += 1; a.pts += 1; }
                 });
             });
@@ -244,8 +266,7 @@
             for (let round = 0; round < numTeams - 1; round++) {
                 const roundMatches = [];
                 for (let i = 0; i < numTeams / 2; i++) {
-                    const home = (round + i) % (numTeams - 1);
-                    const away = (i === 0) ? numTeams - 1 : (numTeams - 1 - i + round) % (numTeams - 1);
+                    const home = (round + i) % (numTeams - 1), away = (i === 0) ? numTeams - 1 : (numTeams - 1 - i + round) % (numTeams - 1);
                     roundMatches.push({ home: TEAMS_LIST[home].id, away: TEAMS_LIST[away].id });
                 }
                 fixtures.push(roundMatches);
@@ -412,7 +433,7 @@
             updateStandingsTable();
 
             try {
-                const docRef = doc(db, 'tournament_results', 'la_liga_12_team');
+                const docRef = doc(db, 'tournament_results', 'premier_league_12_team');
                 await setDoc(docRef, { results: RESULTS });
                 closeAdminModal();
             } catch(err) {
